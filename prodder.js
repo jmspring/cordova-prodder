@@ -12,9 +12,9 @@
 //  */
 
 var config = require('./config'),
-		temp = require('temp').track(),
-		fs = require('fs'),
-		exec = require('child_process').exec;
+    temp = require('temp').track(),
+    fs = require('fs'),
+    exec = require('child_process').exec;
 
 /**
  * Execute the specified action.  Done via setting up and execing the script.
@@ -22,53 +22,53 @@ var config = require('./config'),
  * Expects a callback that takes an error code and possibly an explanation.
  */
 module.exports.execute_command = function(action, data, targetPlatform, callback) {
-	var device = null;
-	if(action.indexOf("run") == 0) {
-		action = "run";
-		device = action.substr(4);
-	}
-	
-	if(!config.script_base.hasOwnProperty(config.platform) || 
-			!config.exec.hasOwnProperty(config.platform)) {
-		callback(503, "invalid platform configuration");
-		return;
-	}
-	
-	script = config.script_base[config.platform];
-	script[script.length] = "cd " + data.path;
-	script[script.length] = "cordova " + action + " " + targetPlatform;
-	if(device != null) {
-		script[script.length - 1] = script[script.length - 1] + " --" + device;
-	}
-	
-	var info = config.exec[config.platform];
-	var tempInfo = {
-		"prefix": "cordova-prodder",
-		"suffix": info.suffix
-	};
-	var cmd = info.command;
-	temp.open(tempInfo, function(err, info) {
-		if(err) {
-			callback(503, "internal error with temporary thingies");
-		} else {
-			fs.writeSync(info.fd, script.join("\n"));
-			fs.close(info.fd, function(err) {
-				if(err) {
-					callback(503, "internal error closing temporary thingies");
-					return;
-				} else {
-					var tmpfile = info.path;
-					child = exec(cmd + " " + tmpfile, function(err, stdout, stderr) {
-						console.log(stdout);
-						console.log(stderr);
-						if(err) {
-							callback(503, "execution failed.");
-						} else {
-							callback(200, null);
-						}
-					});
-				}
-			});
-		}
-	});
+  var device = null;
+  if(action.indexOf("run") == 0) {
+    action = "run";
+    device = action.substr(4);
+  }
+  
+  if(!config.script_base.hasOwnProperty(config.platform) || 
+      !config.exec.hasOwnProperty(config.platform)) {
+    callback(503, "invalid platform configuration");
+    return;
+  }
+  
+  script = config.script_base[config.platform];
+  script[script.length] = "cd " + data.path;
+  script[script.length] = "cordova " + action + " " + targetPlatform;
+  if(device != null) {
+    script[script.length - 1] = script[script.length - 1] + " --" + device;
+  }
+  
+  var info = config.exec[config.platform];
+  var tempInfo = {
+    "prefix": "cordova-prodder",
+    "suffix": info.suffix
+  };
+  var cmd = info.command;
+  temp.open(tempInfo, function(err, info) {
+    if(err) {
+      callback(503, "internal error with temporary thingies");
+    } else {
+      fs.writeSync(info.fd, script.join("\n"));
+      fs.close(info.fd, function(err) {
+        if(err) {
+          callback(503, "internal error closing temporary thingies");
+          return;
+        } else {
+          var tmpfile = info.path;
+          child = exec(cmd + " " + tmpfile, function(err, stdout, stderr) {
+            console.log(stdout);
+            console.log(stderr);
+            if(err) {
+              callback(503, "execution failed.");
+            } else {
+              callback(200, null);
+            }
+          });
+        }
+      });
+    }
+  });
 };

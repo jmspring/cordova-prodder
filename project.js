@@ -14,18 +14,18 @@
 /**
  * Handling of cordova project info
  */
-var		fs = require('fs'),
-			path = require('path');
+var    fs = require('fs'),
+      path = require('path');
 var projectConfig = {
-	path: path.join(__dirname, "projdb") // where are the projects stored
+  path: path.join(__dirname, "projdb") // where are the projects stored
 }
 
 var projectErrors = {
-	ok:								"No error.",
-	invalidName: 			"Inavlid project name.",
-	invalidData:			"Project data specified is incorrect.",
-	notFound:					"Project not found.",
-	noPlatform:				"Platform specified not configured."
+  ok:                "No error.",
+  invalidName:       "Inavlid project name.",
+  invalidData:      "Project data specified is incorrect.",
+  notFound:          "Project not found.",
+  noPlatform:        "Platform specified not configured."
 }
 module.exports.projectErrors = projectErrors;
 
@@ -53,22 +53,22 @@ fs.mkdirParent = function(dirPath, mode, callback) {
  * callback(err, data) - the data handler
  */
 module.exports.load_project = function(projectName, callback) {
-	if(!valid_project_name(projectName)) {
-		callback(projectErrors.invalidName);
-	}
-	var fsPath = path.join(projectConfig.path, projectName + ".json");
-	fs.readFile(fsPath, function(err, data) {
-		if(err) {
-			callback(err, null);
-		} else {
-			try {
-				var info = JSON.parse(data);
-				callback(null, info);
-			} catch(ex) {
-				callback(ex, null);
-			}			
-		}
-	});
+  if(!valid_project_name(projectName)) {
+    callback(projectErrors.invalidName);
+  }
+  var fsPath = path.join(projectConfig.path, projectName + ".json");
+  fs.readFile(fsPath, function(err, data) {
+    if(err) {
+      callback(err, null);
+    } else {
+      try {
+        var info = JSON.parse(data);
+        callback(null, info);
+      } catch(ex) {
+        callback(ex, null);
+      }      
+    }
+  });
 }
 
 /**
@@ -79,29 +79,29 @@ module.exports.load_project = function(projectName, callback) {
  * callback(err) - success/fail callback.
  */
 module.exports.save_project = function(projectName, projectData, callback) {
-	if(!valid_project_name(projectName)) {
-		callback(projectErrors.invalidName);
-	}
-	var fsPath = path.join(projectConfig.path, projectName + ".json");
-	try {
-		var data = JSON.stringify(projectData, null, "  ");
-	} catch(ex) {
-		callback(ex);
-		return;
-	}
-	fs.exists(projectConfig.path, function(exists) {
-		if(!exists) {
-			fs.mkdirParent(projectConfig.path, function(err) {
-				fs.writeFile(fsPath, data, function(err) {
-					callback(err);
-				});
-			});
-		} else {
-			fs.writeFile(fsPath, data, function(err) {
-				callback(err);
-			});
-		}
-	});
+  if(!valid_project_name(projectName)) {
+    callback(projectErrors.invalidName);
+  }
+  var fsPath = path.join(projectConfig.path, projectName + ".json");
+  try {
+    var data = JSON.stringify(projectData, null, "  ");
+  } catch(ex) {
+    callback(ex);
+    return;
+  }
+  fs.exists(projectConfig.path, function(exists) {
+    if(!exists) {
+      fs.mkdirParent(projectConfig.path, function(err) {
+        fs.writeFile(fsPath, data, function(err) {
+          callback(err);
+        });
+      });
+    } else {
+      fs.writeFile(fsPath, data, function(err) {
+        callback(err);
+      });
+    }
+  });
 }
 
 
@@ -112,16 +112,16 @@ module.exports.save_project = function(projectName, projectData, callback) {
  * callback(err) - the result handler
  */
 module.exports.delete_project = function(projectName, callback) {
-	if(!valid_project_name(projectName)) {
-		callback(projectErrors.invalidName);
-	}
-	var fsPath = path.join(projectConfig.path, projectName + ".json");
-	fs.unlink(fsPath, function(err) {
-		if(err && err.code == 'ENOENT') {
-			err = null;
-		}
-		callback(err);
-	});
+  if(!valid_project_name(projectName)) {
+    callback(projectErrors.invalidName);
+  }
+  var fsPath = path.join(projectConfig.path, projectName + ".json");
+  fs.unlink(fsPath, function(err) {
+    if(err && err.code == 'ENOENT') {
+      err = null;
+    }
+    callback(err);
+  });
 }
 
 /**
@@ -131,58 +131,58 @@ module.exports.delete_project = function(projectName, callback) {
  * projectName - the name to validate
  */
 module.exports.valid_project_name = valid_project_name = function(projectName) {
-	if((projectName == null) || (projectName === undefined) || (typeof projectName !== "string")) {
-		return false;
-	}
-	
-	if(projectName.toLowerCase() != projectName) {
-		return false;
-	}
-	
-	if(/[^a-z0-9]/.test(projectName)) {
-		return false;
-	}
-	
-	return true;
+  if((projectName == null) || (projectName === undefined) || (typeof projectName !== "string")) {
+    return false;
+  }
+  
+  if(projectName.toLowerCase() != projectName) {
+    return false;
+  }
+  
+  if(/[^a-z0-9]/.test(projectName)) {
+    return false;
+  }
+  
+  return true;
 }
 
 /** 
  * Validate the project has the proper format.
  *
  * projectData - the data for the projectConfig.  The expected format is:
- *		{
- *			name: <a user friendly string>,
- *			path: <a string path to the project, will be verified>
- *			platforms: <array of strings for the platforms>
- *		}
+ *    {
+ *      name: <a user friendly string>,
+ *      path: <a string path to the project, will be verified>
+ *      platforms: <array of strings for the platforms>
+ *    }
  * callback(err) - is the project valid
  *
  * Likely errors are specified in "projectErrors"
  */
 module.exports.validate_project = validate_project = function(projectData, callback) {
-	if(!projectData.hasOwnProperty("name") || 
-			!projectData.hasOwnProperty("path") ||
-			!projectData.hasOwnProperty("platforms")) {
-		callback(projectErrors.invalidData);
-	} else {
-		if(((typeof projectData["name"] !== "string") || (projectData["name"].length == 0)) ||
-				((typeof projectData["path"] !== "string") || (projectData["path"].length == 0)) ||
-				((typeof projectData["platforms"] !== "object") ||
-						(Object.prototype.toString.call( projectData["platforms"] ) !== '[object Array]') &&
-						(projectData["platforms"].length == 0))) {
-			callback(projectErrors.invalidData);
-		} else {	
-			fs.stat(projectData["path"], function(err, stats) {
-				if(err) {
-					callback(err);
-				} else {
-					if(!stats.isDirectory()) {
-						callback(projectErrors.notFound);
-					} else {
-						callback(projectErrors.ok);
-					}
-				}
-			});
-		}
-	}
+  if(!projectData.hasOwnProperty("name") || 
+      !projectData.hasOwnProperty("path") ||
+      !projectData.hasOwnProperty("platforms")) {
+    callback(projectErrors.invalidData);
+  } else {
+    if(((typeof projectData["name"] !== "string") || (projectData["name"].length == 0)) ||
+        ((typeof projectData["path"] !== "string") || (projectData["path"].length == 0)) ||
+        ((typeof projectData["platforms"] !== "object") ||
+            (Object.prototype.toString.call( projectData["platforms"] ) !== '[object Array]') &&
+            (projectData["platforms"].length == 0))) {
+      callback(projectErrors.invalidData);
+    } else {  
+      fs.stat(projectData["path"], function(err, stats) {
+        if(err) {
+          callback(err);
+        } else {
+          if(!stats.isDirectory()) {
+            callback(projectErrors.notFound);
+          } else {
+            callback(projectErrors.ok);
+          }
+        }
+      });
+    }
+  }
 }

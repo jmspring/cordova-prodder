@@ -3,7 +3,26 @@
   "description": "a node service for poking at cordova projects on Windows",
   "version": "0.0.1",
   "private": true,
+  "contributors": [
+    {
+      "name": "Jim Spring",
+      "url": "http://innerdot.com",
+      "email": "jmspring@gmail.com"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
   "dependencies": {
-    "express": "3.x"
+    "express": "4.x",
+    "body-parser": "*",
+    "temp": "*",
+    "request": "*"
+  },
+  "scripts": {
+    "start": "node app.js"
   }
 }

@@ -12,28 +12,28 @@
 //  */
 var config = {};
 
-config.port = 9876;					// which port to listen on
-config.platform = "osx";		// which platform the server is running on
+config.port = 9876;          // which port to listen on
+config.platform = "osx";    // which platform the server is running on
 
 // host platform specific steps needed to generate the script to be executed
 config.script_base = {
-	"windows": [
-		"call \"C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat\" x86"
-	],
-	"osx": [
-	]
+  "windows": [
+    "call \"C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat\" x86"
+  ],
+  "osx": [
+  ]
 };
 
 // host platform specific config needed to execute the script
 config.exec = {
-	"windows": {
-		"command":	"cmd /c",
-		"suffix":		".bat"
-	},
-	"osx": {
-		"command":	"sh",
-		"suffix":		".sh"
-	}
+  "windows": {
+    "command":  "cmd /c",
+    "suffix":    ".bat"
+  },
+  "osx": {
+    "command":  "sh",
+    "suffix":    ".sh"
+  }
 };
 
 module.exports = config;
