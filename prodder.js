@@ -24,10 +24,10 @@ var config = require('./config'),
 module.exports.execute_command = function(action, data, targetPlatform, callback) {
   var device = null;
   if(action.indexOf("run") == 0) {
-    action = "run";
     device = action.substr(4);
+    action = "run";
   }
-  
+    
   if(!config.script_base.hasOwnProperty(config.platform) || 
       !config.exec.hasOwnProperty(config.platform)) {
     callback(503, "invalid platform configuration");
@@ -40,7 +40,7 @@ module.exports.execute_command = function(action, data, targetPlatform, callback
   if(device != null) {
     script[script.length - 1] = script[script.length - 1] + " --" + device;
   }
-  
+
   var info = config.exec[config.platform];
   var tempInfo = {
     "prefix": "cordova-prodder",
